@@ -1,0 +1,78 @@
+<title>登录</title>
+<template>
+    <div class="page-body">
+        <div class="container">
+            <h2 id="site_name" class="login-heading">Eira</h2>
+            <div class="card form-login">
+                <form id="login_form" method="post">
+                    <div id="alert_container"></div>
+                    <div class="form-group">
+                        <label for="username">账号</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="用户名/邮箱"
+                               required
+                               autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="密码"
+                               required>
+                    </div>
+                    <input type="submit" class="btn btn-success btn-block" value="登录"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+<style>
+    .page-body {
+        overflow-x: hidden;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        background-color: #eee;
+        display: flex;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .form-login {
+        max-width: 330px;
+        padding: 15px;
+        margin: 0 auto;
+    }
+
+    .login-alert {
+        max-width: 330px;
+        margin: 0 auto 10px;
+    }
+
+    .login-heading {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
+<script>
+    (function () {
+        $('#site_name').html($.Eira.data('siteName'));
+        $('#login_form').submit(function () {
+            var loadingBox = Utils.loadingBox('登录中...');
+            $(this).ajaxSubmit({
+                url: $.Eira.data('apiUrl') + 'api/login',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status !== 0) {
+                        Utils.showAlert('#alert_container', res.msg, 'danger', true);
+                    } else {
+                        $.Eira.storage('user', res.data);
+                        $.Eira.navigate('index')
+                    }
+                    loadingBox.hide();
+                }, error: function () {
+                    loadingBox.hide();
+                    Utils.tipBox('服务器发生了一些错误');
+                }
+            });
+            return false;
+        });
+    })();
+</script>

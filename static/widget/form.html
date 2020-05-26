@@ -1,0 +1,83 @@
+<template>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+        <h1 class="h2" page-id="title"></h1>
+    </div>
+    <form page-id="form" method="post" enctype="multipart/form-data">
+
+
+    </form>
+</template>
+<script>
+    (function () {
+        var Form = Widget.extend({
+            init: function ($elem, conf) {
+                this.$elem = $elem;
+                $elem.find('[page-id="title"]').text(conf.title || '无标题');
+                this.pk = conf.primaryKey || 'id';
+                this.mod = conf.mod;
+                this.action = conf.action;
+                this.columns = conf.columns || [];
+                this.submit = conf.submit || '提交';
+                this.buildForm();
+            },
+            buildForm: function () {
+                var columns = this.columns;
+                var $form = this.$elem.find('[page-id="form"]');
+                $form.empty();
+                for (var i = 0; i < columns.length; i++) {
+                    var required = columns[i].required ? ' required' : '';
+                    var item = '<div class="form-group"><label for="' + columns[i].column + '">' + columns[i].text + '</label>';
+                    switch (columns[i].type) {
+                        case 'textarea':
+                            item += '<textarea class="form-control" id="' + columns[i].column + '" name="' + columns[i].column + '"' + required + '></textarea>';
+                            break;
+                        case 'select':
+                            item += '<select class="form-control" id="' + columns[i].column + '" name="' + columns[i].column + '"' + required + '>';
+                            var sOptions = columns[i].options;
+                            if (sOptions) {
+                                for (var si = 0; si < sOptions.length; si++) {
+                                    item += '<option value="' + sOptions[si].value + '">' + sOptions[si].text + '</option>';
+                                }
+                            }
+                            item += '</select>';
+                            break;
+                        default:
+                            item += '<input type="text" class="form-control" id="' + columns[i].column + '" name="' + columns[i].column + '"  placeholder="' + columns[i].text + '"' + required + '/>';
+                            break;
+                    }
+                    item += '</div>';
+                    $form.append(item);
+                }
+                $form.append('<button type="submit" class="btn btn-success">' + this.submit + '</button>');
+            },
+            created: function () {
+                var that = this;
+                this.$elem.find('[page-id="form"]').submit(function () {
+                    var loadingBox = Utils.loadingBox('提交中...');
+                    $(this).ajaxSubmit({
+                        url: $.Eira.data('apiUrl') + 'api/' + that.mod + '/' + that.action,
+                        data: {token: $.Eira.storage('user').token},
+                        dataType: 'json',
+                        success: function (res) {
+                            console.log(res);
+                            if (res.status !== 0) {
+                                Utils.tipBox(res.msg);
+                            } else {
+                                $.Eira.navigate('', {
+                                    mod: that.mod,
+                                })
+                            }
+                            loadingBox.hide();
+                        }, error: function (err) {
+                            loadingBox.hide();
+                            Utils.tipBox('服务器发生了一些错误');
+                        }
+                    });
+                    return false;
+                });
+            }
+        });
+
+        $.Eira.defineWidget(Form);
+    })();
+</script>

@@ -1,0 +1,22 @@
+<title>用户管理</title>
+<template>
+    <div id="table"></div>
+</template>
+<script use-widget="table">
+    (function () {
+        var table = $.Eira.widget('#table', 'table', {
+            title: '用户管理',
+            url: 'users',
+            columns: [
+                {column: 'id', text: 'ID'},
+                {column: 'username', text: '用户名'},
+                {column: 'email', text: '邮箱'},
+                {
+                    column: 'role_id', text: '角色', tpl: function (data) {
+                        return Constant.USER_ROLES[data.role_id];
+                    }
+                },
+            ],
+        });
+    })();
+</script>

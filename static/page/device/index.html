@@ -1,0 +1,53 @@
+<title>我的设备</title>
+<template>
+    <div id="table"></div>
+</template>
+<script use-widget="table">
+    (function () {
+        var table = $.Eira.widget('#table', 'table', {
+            title: '我的设备',
+            url: 'devices',
+            data: {},
+            columns: [
+                {column: 'device_id', text: '设备ID'},
+                {column: 'device_name', text: '设备名'},
+            ],
+            toolbar: [
+                {action: 'add', color: 'success', text: '添加设备'},
+            ],
+            rowOp: [
+                {action: 'view', text: '查看', color: 'info'},
+            ],
+        });
+        table.on('tool', function (action, item, index, handler) {
+            if (action === 'view') {
+                $.Eira.navigate('', {
+                    mod: 'device',
+                    action: 'view',
+                    id: item.device_id,
+                })
+            }
+        });
+        table.on('toolbar', function (action) {
+            if (action === 'add') {
+                var inputBox = Utils.inputBox('添加设备', '请输入设备ID');
+                inputBox.on('input', function (text) {
+                    var data = {
+                        name: text,
+                    };
+                    Utils.apiPost('api/project/create', data).done(function (res) {
+                        if (!res || res.status !== 0) {
+                            Utils.tipBox(res.msg);
+                            return;
+                        }
+                        $.Eira.navigate('', {
+                            mod: 'project',
+                            action: 'view',
+                            id: res.data,
+                        });
+                    });
+                });
+            }
+        });
+    })();
+</script>

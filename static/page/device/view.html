@@ -1,0 +1,81 @@
+<template>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+        <h1 class="h2">设备详情</h1>
+    </div>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">设备名称:<span id="project_name">测试设备</span></h5>
+            <p id="project_state" class="card-text">设备状态:
+            <span class="badge badge-primary">当前温度:30℃</span>
+            <span class="badge badge-primary">当前湿度:50</span></p>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+        <h1 class="h2">历史数据</h1>
+    </div>
+    <div id="charts" style="height: 400px;width: 100%"></div>
+</template>
+<script>
+    (function () {
+        var router = $.Eira.router();
+        var user = $.Eira.storage('user');
+        var dom = document.getElementById("charts");
+        var myChart = echarts.init(dom);
+
+        console.log($.Eira.data('apiUrl') + 'api/data')
+        Utils.apiPost('api/data', {
+            id: router.query.id,
+        }).done(function (data) {
+            console.log(data);
+            render(data);
+        });
+
+        function render(data) {
+            var xs = data.map(x => new Date(x.timestamp).toTimeString().substring(0, 5));
+            var temps = data.map(x => x.temperature);
+            var humis = data.map(x => x.humidity);
+            var option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['温度', '湿度']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xs
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '温度',
+                        type: 'line',
+                        stack: '总量',
+                        data: temps
+                    },
+                    {
+                        name: '湿度',
+                        type: 'line',
+                        stack: '总量',
+                        data: humis
+                    },
+                ]
+            };
+            myChart.setOption(option, true);
+        }
+    })();
+</script>
