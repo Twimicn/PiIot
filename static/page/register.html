@@ -1,0 +1,53 @@
+<title>注册</title>
+<template>
+    <div class="container" style="max-width: 450px;">
+        <div class="card mt-4">
+            <div class="card-body">
+                <div id="alert_success"></div>
+                <form id="reg_form" method="post" class="form-signin">
+                    <h2 id="site_name">Eira</h2>
+                    <div id="alert_container"></div>
+                    <div class="form-group">
+                        <label for="username">账号</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="用户名/邮箱"
+                               required
+                               autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="邮箱"
+                               required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="密码"
+                               required>
+                    </div>
+                    <input type="submit" class="btn btn-success btn-block" value="注册"/>
+                    <div class="float-right"><a role="button" href="#login" class="btn btn-link">登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    (function () {
+        $('#site_name').html($.Eira.data('siteName'));
+        $('#reg_form').submit(function () {
+            $(this).ajaxSubmit({
+                url: $.Eira.data('apiUrl') + 'api/register',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status !== 0) {
+                        Utils.showAlert('#alert_container', res.msg, 'danger', true);
+                    } else {
+                        $('#reg_form').hide();
+                        Utils.showAlert('#alert_success', '注册成功 <a href="#login">去登录</a>', 'success');
+                    }
+                }
+            });
+            return false;
+        });
+    })();
+</script>

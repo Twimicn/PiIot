@@ -5,9 +5,15 @@
     <div class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">设备名称:<span id="project_name">测试设备</span></h5>
-            <p id="project_state" class="card-text">设备状态:
-            <span class="badge badge-primary">当前温度:30℃</span>
-            <span class="badge badge-primary">当前湿度:50</span></p>
+            <p class="card-text">
+                <span class="badge badge-warning">当前温度:<span id="txt_temp">-</span>℃</span>
+            </p>
+            <p class="card-text">
+                <span class="badge badge-primary">当前湿度:<span id="txt_humi">-</span></span>
+            </p>
+            <p class="card-text">
+                <button type="button" id="btn_refresh" class="btn btn-sm btn-success" disabled>刷新</button>
+            </p>
         </div>
     </div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
@@ -22,7 +28,31 @@
         var dom = document.getElementById("charts");
         var myChart = echarts.init(dom);
 
-        console.log($.Eira.data('apiUrl') + 'api/data')
+        var client = new Paho.MQTT.Client('wss://zhizhi.twimi.cn/mqtt', "zhizhi" + (new Date().getTime()));
+
+        function onMessage(msg) {
+            var data = JSON.parse(msg.payloadString);
+            $('#txt_temp').text(data.temp);
+            $('#txt_humi').text(data.humi);
+        }
+
+        function onConnected() {
+            client.subscribe('/device/' + router.query.id + '/th', {qos: 0});
+            $('#btn_refresh').attr('disabled', null);
+        }
+
+        client.onMessageArrived = onMessage;
+
+        client.connect({
+            onSuccess: onConnected,
+        });
+
+        $('#btn_refresh').click(function () {
+            client.send("/device/" + router.query.id + "/cmd", JSON.stringify({
+                cmd: 'refresh'
+            }), 0)
+        });
+
         Utils.apiPost('api/data', {
             id: router.query.id,
         }).done(function (data) {

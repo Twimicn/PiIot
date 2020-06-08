@@ -33,17 +33,18 @@
                 var inputBox = Utils.inputBox('添加设备', '请输入设备ID');
                 inputBox.on('input', function (text) {
                     var data = {
-                        name: text,
+                        device_id: text,
+                        device_name: '设备' + text,
                     };
-                    Utils.apiPost('api/project/create', data).done(function (res) {
+                    Utils.apiPost('api/bind', data).done(function (res) {
                         if (!res || res.status !== 0) {
                             Utils.tipBox(res.msg);
                             return;
                         }
                         $.Eira.navigate('', {
-                            mod: 'project',
+                            mod: 'device',
                             action: 'view',
-                            id: res.data,
+                            id: text,
                         });
                     });
                 });

@@ -13,6 +13,7 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
     <script src="js/eira.js"></script>
     <script src="js/util.js"></script>
     <script src="js/constant.js"></script>
@@ -22,7 +23,7 @@
 <script>
     $.Eira.data({
         siteName: '树莓派管理系统',
-        apiUrl: (location.hostname === 'localhost') ? 'http://localhost:8000/' : 'https://zhizi.twimi.cn/',
+        apiUrl: (location.hostname === 'localhost') ? 'http://localhost:8000/' : 'https://zhizhi.twimi.cn/',
         leftNav: [
             {mod: 'index', title: '首页'},
             {mod: 'user', title: '用户管理'},
@@ -33,7 +34,7 @@
         pages: './page',
         widgets: './widget',
         page404: '404',
-        version: '05272311',
+        version: '06082224',
         debug: (location.hostname === 'localhost'),
     });
 </script>
